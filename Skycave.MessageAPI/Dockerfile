@@ -4,22 +4,21 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
 EXPOSE 8080
-EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["Skycave.MessageAPI/Skycave.MessageAPI.csproj", "Skycave.MessageAPI/"]
-RUN dotnet restore "./Skycave.MessageAPI/./Skycave.MessageAPI.csproj"
+WORKDIR /src/
+COPY ["Skycave.MessageAPI/Skycave.MessageService.csproj", "Skycave.MessageAPI/"]
+RUN dotnet restore "./Skycave.MessageAPI/./Skycave.MessageService.csproj"
 COPY . .
 WORKDIR "/src/Skycave.MessageAPI"
-RUN dotnet build "./Skycave.MessageAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./Skycave.MessageService.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Skycave.MessageAPI.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Skycave.MessageService.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Skycave.MessageAPI.dll"]
+ENTRYPOINT ["dotnet", "Skycave.MessageService.dll"]

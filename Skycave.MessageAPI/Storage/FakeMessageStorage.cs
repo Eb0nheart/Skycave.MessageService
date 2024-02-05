@@ -1,13 +1,13 @@
 ﻿using System.Collections.Concurrent;
 
-namespace Skycave.MessageService.Data;
+namespace Skycave.MessageService.Storage;
 
 public class FakeMessageStorage(ILogger<FakeMessageStorage> logger) : MessageStorage
 {
     // TODO: anden collection type
     private readonly ConcurrentQueue<WallMessage> messages = [];
 
-    public Task<WallMessage> AddWallMessageAsync(string creator, string messageContent)
+    public Task<WallMessage> AddWallMessageAsync(Creator creator, string messageContent)
     {
         var id = Guid.NewGuid();
         var created = DateTime.Now;
