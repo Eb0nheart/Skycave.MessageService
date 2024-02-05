@@ -9,7 +9,7 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
 {
     [HttpGet]
     [Route("page={page:int}&pageSize={pageSize:int}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type= typeof(IEnumerable<Message>))]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -28,7 +28,8 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
                 return TypedResults.NoContent();
             }
 
-            return TypedResults.Ok(messages);
+            return TypedResults.Ok(messages.Select(message 
+                => new Message(message.Id, message.Creator.Id, message.Creator.Name, message.Created, message.Message)));
         }
         catch (Exception ex)
         {
@@ -65,6 +66,7 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
 
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IResult> UpdateMessage([FromBody] UpdateRequest dto)
     {
