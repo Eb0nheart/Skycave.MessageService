@@ -1,28 +1,34 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Skycave.MessageService.DTOs;
 using Skycave.MessageService.Storage;
+using System.ComponentModel.DataAnnotations;
 
 namespace Skycave.MessageService.Controllers;
 
 [Route("[controller]")]
 public class WallController(ILogger<WallController> logger, MessageStorage storage) : ControllerBase
 {
+    /// <summary>
+    /// Gets messages from the wall in the given room.
+    /// </summary>
+    /// <param name="roomId">Which room the wall to retrieve messages from is in.</param>
+    /// <param name="page">Required parameter for standard pagination operation.</param>
+    /// <param name="pageSize">Optional for pagination as default is 20 messages.</param>
     [HttpGet]
-    [Route("page={page:int}&pageSize={pageSize:int}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type= typeof(IEnumerable<Message>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Message>))]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IResult> GetMessagesAsync(int page, int pageSize)
+    public async Task<IResult> GetMessagesAsync([Required] Guid roomId, [Required] int page, int? pageSize = 20)
     {
-        if (page < 0 || pageSize < 1)
+        if (page < 0)
         {
-            return TypedResults.BadRequest("Page cannot be less than 0 and pagesize cannot be less than 1!");
+            return TypedResults.BadRequest("Page cannot be less than 0!");
         }
 
         try
         {
-            var messages = await storage.GetWallMessagesAsync(page, pageSize);
+            var messages = await storage.GetWallMessagesAsync(page, pageSize.Value);
             if (!messages.Any())
             {
                 return TypedResults.NoContent();
@@ -38,6 +44,9 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
         }
     }
 
+    /// <summary>
+    /// Posts a message on the wall in the specified room.
+    /// </summary>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(PostResponse))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -64,6 +73,9 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
         }
     }
 
+    /// <summary>
+    /// Edits a message on the wall.
+    /// </summary>
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -72,7 +84,7 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
     {
         try
         {
-            await storage.UpdateWallMessageAsync(dto.Id, dto.UpdatedMessage);
+            await storage.UpdateWallMessageAsync(dto.MessageId, dto.UpdatedMessage);
             return TypedResults.Ok();
         }
         catch (Exception ex)

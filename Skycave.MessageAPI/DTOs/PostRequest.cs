@@ -1,3 +1,3 @@
 ﻿namespace Skycave.MessageService.DTOs;
 
-public record PostRequest(Guid CreatorId, string CreatorName, string? Message);
+public record PostRequest(Guid RoomId, Guid CreatorId, string CreatorName, string? Message);

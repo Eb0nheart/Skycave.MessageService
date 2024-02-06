@@ -1,3 +1,3 @@
 ﻿namespace Skycave.MessageService.DTOs;
 
-public record UpdateRequest(Guid Id, Guid UserId, string UpdatedMessage);
+public record UpdateRequest(Guid MessageId, Guid RequestingUserId, string UpdatedMessage);
