@@ -28,7 +28,7 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
 
         try
         {
-            var messages = await storage.GetWallMessagesAsync(page, pageSize.Value);
+            var messages = await storage.GetPostsOnWallAsync(roomId, page, pageSize.Value);
             if (!messages.Any())
             {
                 return TypedResults.NoContent();
@@ -61,9 +61,9 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
         try
         {
             var creator = new Creator(dto.CreatorId, dto.CreatorName);
-            var wallMessage = await storage.AddWallMessageAsync(creator, dto.Message);
+            var wallMessage = await storage.AddPostToWallAsync(dto.RoomId, creator, dto.Message);
 
-            var response = new PostResponse(creator.Id, creator.Name, wallMessage.Message);
+            var response = new PostResponse(wallMessage.Id, creator.Name, wallMessage.Message);
             return TypedResults.Created(default(string), response);
         }
         catch (Exception ex)
@@ -84,7 +84,7 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
     {
         try
         {
-            await storage.UpdateWallMessageAsync(dto.MessageId, dto.UpdatedMessage);
+            await storage.UpdatePostOnWallAsync(dto.MessageId, dto.UpdatedMessage);
             return TypedResults.Ok();
         }
         catch (Exception ex)
