@@ -5,7 +5,7 @@ public class FakeMessageStorage(ILogger<FakeMessageStorage> logger) : MessageSto
     private readonly static object wallLock = new();
     private readonly List<Wall> walls = [];
 
-    public Task<Post> AddPostToWallAsync(Guid roomId, Creator creator, string messageContent)
+    public Task<Post> AddPostToWallAsync(string positionString, Creator creator, string messageContent)
     {
         var id = Guid.NewGuid();
         var created = DateTime.Now;
@@ -13,10 +13,10 @@ public class FakeMessageStorage(ILogger<FakeMessageStorage> logger) : MessageSto
 
         lock(wallLock)
         {
-            var wall = walls.SingleOrDefault(wall => wall.RoomId == roomId);
+            var wall = walls.SingleOrDefault(wall => wall.PositionString == positionString);
             if(wall is null)
             {
-                var newWall = new Wall(roomId, [post]);
+                var newWall = new Wall(positionString, [post]);
                 walls.Add(newWall);
             }
             else
@@ -28,7 +28,7 @@ public class FakeMessageStorage(ILogger<FakeMessageStorage> logger) : MessageSto
         return Task.FromResult(post);
     }
 
-    public Task<IEnumerable<Post>> GetPostsOnWallAsync(Guid roomId, int page, int pageSize)
+    public Task<IEnumerable<Post>> GetPostsOnWallAsync(string positionString, int page, int pageSize)
     {
         var pageStart = page * pageSize;
         var pageEnd = pageStart + pageSize;
@@ -36,7 +36,7 @@ public class FakeMessageStorage(ILogger<FakeMessageStorage> logger) : MessageSto
 
         lock (wallLock)
         {
-            var wall = walls.SingleOrDefault(wall => wall.RoomId == roomId);
+            var wall = walls.SingleOrDefault(wall => wall.PositionString == positionString);
             if(wall is null)
             {
                 return Task.FromResult(Enumerable.Empty<Post>());
@@ -59,6 +59,6 @@ public class FakeMessageStorage(ILogger<FakeMessageStorage> logger) : MessageSto
             wall.Posts[postIndex] = updatedPost;
         }
 
-        return Task.CompletedTask;
+        return Task.FromResult(true);
     }
 }

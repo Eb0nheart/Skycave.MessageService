@@ -15,6 +15,7 @@ builder.Services.AddSwaggerGen(configuration =>
         Title = "Skycave - Message Service",
         Version = "v1"
     });
+    
 
     var filePath = Path.Combine(AppContext.BaseDirectory, "Skycave.MessageService.xml");
     configuration.IncludeXmlComments(filePath);
