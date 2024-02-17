@@ -1,10 +1,11 @@
+using Microsoft.FeatureManagement;
 using Microsoft.OpenApi.Models;
+using Skycave.MessageService;
 using Skycave.MessageService.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<MessageStorage, FakeMessageStorage>();
-
+builder.Services.AddFeatureManagement();
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -20,6 +21,16 @@ builder.Services.AddSwaggerGen(configuration =>
     var filePath = Path.Combine(AppContext.BaseDirectory, "Skycave.MessageService.xml");
     configuration.IncludeXmlComments(filePath);
 });
+
+var useFakeStorage = builder.Configuration.GetSection($"FeatureManagement:{FeatureFlags.UseFakeStorage}").Get<bool>();
+if (useFakeStorage)
+{
+    builder.Services.AddSingleton<MessageStorage, FakeMessageStorage>();
+}
+else
+{
+    builder.Services.AddSingleton<MessageStorage, RedisMessageStorage>();
+}
 
 var app = builder.Build();
 

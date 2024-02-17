@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Skycave.MessageService", "Skycave.MessageAPI\Skycave.MessageService.csproj", "{BE2567FE-6739-41C2-8C9D-7DDDBB4E352B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B6A83BFF-2C0C-4442-B40F-F03D5AF63A4C}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerfile = Dockerfile
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Skycave.MessageService", "Skycave.MessageService\Skycave.MessageService.csproj", "{E18A9409-D56E-4B0F-ABEA-9A6AEFF9B2FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +17,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BE2567FE-6739-41C2-8C9D-7DDDBB4E352B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BE2567FE-6739-41C2-8C9D-7DDDBB4E352B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BE2567FE-6739-41C2-8C9D-7DDDBB4E352B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BE2567FE-6739-41C2-8C9D-7DDDBB4E352B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E18A9409-D56E-4B0F-ABEA-9A6AEFF9B2FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E18A9409-D56E-4B0F-ABEA-9A6AEFF9B2FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E18A9409-D56E-4B0F-ABEA-9A6AEFF9B2FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E18A9409-D56E-4B0F-ABEA-9A6AEFF9B2FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

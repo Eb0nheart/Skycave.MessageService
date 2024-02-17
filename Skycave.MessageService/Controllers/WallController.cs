@@ -17,6 +17,7 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
     /// <response code="204">Request was successful but no messages found</response>
     /// <response code="400">Invalid arguments provided</response>
     /// <response code="500">Internal server error, f.ex. database connection issues</response>
+    /// <response code="501">The feature is not available. Likely due to configuration error</response>
     /// <param name="positionString">Which room the wall to retrieve messages from is in. format is (x,y,z)</param>
     /// <param name="pageNumber">Required parameter for standard pagination operation.</param>
     /// <param name="pageSize">Optional for pagination as default is 20 messages.</param>
@@ -25,6 +26,7 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status501NotImplemented)]
     public async Task<IResult> GetMessagesAsync([Required] string positionString, [Required] int pageNumber, int? pageSize = 20)
     {
         if (pageNumber < 0)
@@ -43,6 +45,10 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
             return TypedResults.Ok(messages.Select(message 
                 => new Message(message.Id, message.Creator.Id, message.Creator.Name, message.Created, message.Message)));
         }
+        catch(NotImplementedException)
+        {
+            return TypedResults.StatusCode(StatusCodes.Status501NotImplemented);
+        }
         catch (Exception ex)
         {
             logger.LogCritical(ex, "Can't get messages from storage!");
@@ -56,10 +62,12 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
     /// <response code="201">Resource was created successfully</response>
     /// <response code="400">Invalid arguments provided</response>
     /// <response code="500">Internal server error, f.ex. db issues</response>
+    /// <response code="501">The feature is not available. Likely due to configuration error</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(PostResponse))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status501NotImplemented)]
     public async Task<IResult> PostMessage([FromBody] PostRequest dto)
     {
         if(string.IsNullOrWhiteSpace(dto.CreatorName) || string.IsNullOrWhiteSpace(dto.Message))
@@ -75,6 +83,10 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
             var response = new PostResponse(wallMessage.Id, creator.Name, wallMessage.Message);
             return TypedResults.Created(default(string), response);
         }
+        catch (NotImplementedException)
+        {
+            return TypedResults.StatusCode(StatusCodes.Status501NotImplemented);
+        }
         catch (Exception ex)
         {
             logger.LogCritical(ex, "Couldn't save message for request {@Request}", dto);
@@ -89,11 +101,13 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
     /// <response code="401">User tried to update another user's message</response>
     /// <response code="404">Requested message to update doesn't exist</response>
     /// <response code="500">Internal server error, f.ex. db issues</response>
+    /// <response code="501">The feature is not available. Likely due to configuration error</response>
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status501NotImplemented)]
     public async Task<IResult> UpdateMessage([FromBody] UpdateRequest dto)
     {
         try
@@ -101,7 +115,11 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
             await storage.UpdatePostOnWallAsync(dto.MessageId, dto.UpdatedMessage);
             return TypedResults.Ok();
         }
-        catch(ArgumentException ex)
+        catch (NotImplementedException)
+        {
+            return TypedResults.StatusCode(StatusCodes.Status501NotImplemented);
+        }
+        catch (ArgumentException ex)
         {
             logger.LogCritical(ex, "Invalid update request {@UpdateRequest}", dto);
             return TypedResults.NotFound();

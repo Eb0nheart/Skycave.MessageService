@@ -7,11 +7,11 @@ EXPOSE 8080
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
-WORKDIR /src/
-COPY ["Skycave.MessageAPI/Skycave.MessageService.csproj", "Skycave.MessageAPI/"]
-RUN dotnet restore "./Skycave.MessageAPI/./Skycave.MessageService.csproj"
+WORKDIR /src
+COPY ["Skycave.MessageService/Skycave.MessageService.csproj", "Skycave.MessageService/"]
+RUN dotnet restore "./Skycave.MessageService/Skycave.MessageService.csproj"
 COPY . .
-WORKDIR "/src/Skycave.MessageAPI"
+WORKDIR "/src/Skycave.MessageService"
 RUN dotnet build "./Skycave.MessageService.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
