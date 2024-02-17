@@ -1,0 +1,28 @@
+name: cd
+
+on:
+  push:
+    branches:
+      - 'master'
+
+env:
+  image_name: skycave-messageservice
+
+jobs: 
+    docker: 
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v4
+
+          - name: Build Image
+            run: docker build -t ${{env.image_name}} .
+
+          - name: Docker Login
+            run: docker login ${{secrets.IMAGE_REGISTRY}} -u ${{secrets.HUB_USER}} -p ${{secrets.HUB_PASS}}
+
+          - name: Tag image
+            run: docker tag ${{env.image_name}}:latest ${{secrets.IMAGE_REGISTRY}}/echo/${{env.image_name}}:latest
+
+          - name: Push Image
+            run: docker push ${{secrets.IMAGE_REGISTRY}}/echo/${{env.image_name}}:latest
