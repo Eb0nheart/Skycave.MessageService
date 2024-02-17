@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Skycave.MessageService.DTOs;
+﻿namespace Skycave.MessageService.DTOs;
 
 /// <param name="Id"></param>
 /// <param name="CreatorId"></param>

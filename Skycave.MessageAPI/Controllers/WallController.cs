@@ -77,7 +77,7 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
         }
         catch (Exception ex)
         {
-            logger.LogCritical(ex, "Couldn't save message for request {Request}", dto);
+            logger.LogCritical(ex, "Couldn't save message for request {@Request}", dto);
             return TypedResults.Problem();
         }
     }
@@ -101,9 +101,14 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
             await storage.UpdatePostOnWallAsync(dto.MessageId, dto.UpdatedMessage);
             return TypedResults.Ok();
         }
+        catch(ArgumentException ex)
+        {
+            logger.LogCritical(ex, "Invalid update request {@UpdateRequest}", dto);
+            return TypedResults.NotFound();
+        }
         catch (Exception ex)
         {
-            logger.LogCritical(ex, "Couldn't update message for request {Request}", dto);
+            logger.LogCritical(ex, "Couldn't update message for request {@Request}", dto);
             return TypedResults.Problem();
         }
     }

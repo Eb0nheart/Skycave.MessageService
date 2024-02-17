@@ -51,14 +51,18 @@ public class FakeMessageStorage(ILogger<FakeMessageStorage> logger) : MessageSto
     {
         lock (wallLock)
         {
-            // TODO: Error handling. Hvad hvis wall ikke findes? Hvad hvis post ikke findes? 
             var wall = walls.Find(wall => wall.Posts.Exists(post => post.Id == postId));
-            var post = wall.Posts.Find(post => post.Id == postId);
+            var post = wall?.Posts.Find(post => post.Id == postId);
+            if(wall is null || post is null)
+            {
+                throw new ArgumentException("Couldn't find wall with specified post!");
+            }
+
             var updatedPost = post with { Message = message };
             var postIndex = wall.Posts.IndexOf(post);
             wall.Posts[postIndex] = updatedPost;
         }
 
-        return Task.FromResult(true);
+        return Task.CompletedTask;
     }
 }
