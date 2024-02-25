@@ -22,7 +22,7 @@ jobs:
             run: docker login ${{secrets.IMAGE_REGISTRY}} -u ${{secrets.HUB_USER}} -p ${{secrets.HUB_PASS}}
 
           - name: Tag image
-            run: docker tag ${{env.image_name}}:latest ${{secrets.IMAGE_REGISTRY}}/echo/${{env.image_name}}:latest
+            run: docker tag ${{env.image_name}}:latest ${{secrets.IMAGE_REGISTRY}}/echo-public/${{env.image_name}}:latest
 
           - name: Push Image
-            run: docker push ${{secrets.IMAGE_REGISTRY}}/echo/${{env.image_name}}:latest
+            run: docker push ${{secrets.IMAGE_REGISTRY}}/echo-public/${{env.image_name}}:latest
