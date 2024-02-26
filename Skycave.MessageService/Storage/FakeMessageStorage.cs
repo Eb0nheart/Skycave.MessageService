@@ -47,15 +47,22 @@ public class FakeMessageStorage(ILogger<FakeMessageStorage> logger) : MessageSto
         }
     }
 
+    public Task<Post?> GetPost(Guid postId)
+    {
+        var wall = walls.Find(wall => wall.Posts.Exists(post => post.Id == postId));
+        var post = wall?.Posts.Find(post => post.Id == postId);
+        return Task.FromResult(wall is null || post is null ? null : post);
+    }
+
     public Task UpdatePostOnWallAsync(Guid postId, string message)
     {
         lock (wallLock)
         {
             var wall = walls.Find(wall => wall.Posts.Exists(post => post.Id == postId));
             var post = wall?.Posts.Find(post => post.Id == postId);
-            if(wall is null || post is null)
+            if (wall is null || post is null)
             {
-                throw new ArgumentException("Couldn't find wall with specified post!");
+                return Task.FromException(new ArgumentException("Couldn't find wall with specified post!"));
             }
 
             var updatedPost = post with { Message = message };

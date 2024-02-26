@@ -66,13 +66,14 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(PostResponse))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status501NotImplemented)]
     public async Task<IResult> PostMessage([FromBody] PostRequest dto)
     {
         if(string.IsNullOrWhiteSpace(dto.CreatorName) || string.IsNullOrWhiteSpace(dto.Message))
         {
-            return TypedResults.BadRequest("Creator");
+            return TypedResults.BadRequest("Creator or Message is invalid");
         }
 
         try
@@ -106,12 +107,24 @@ public class WallController(ILogger<WallController> logger, MessageStorage stora
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status501NotImplemented)]
     public async Task<IResult> UpdateMessage([FromBody] UpdateRequest dto)
     {
         try
         {
+            var post = await storage.GetPost(dto.MessageId);
+            if(post is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            if(dto.RequestingUserId != post.Creator.Id)
+            {
+                return TypedResults.Unauthorized();
+            }
+
             await storage.UpdatePostOnWallAsync(dto.MessageId, dto.UpdatedMessage);
             return TypedResults.Ok();
         }

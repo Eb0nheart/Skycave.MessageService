@@ -8,6 +8,11 @@ public class RedisMessageStorage : MessageStorage
         throw new NotImplementedException();
     }
 
+    public Task<Post?> GetPost(Guid postId)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<IEnumerable<Post>> GetPostsOnWallAsync(string positionString, int page, int pageSize)
     {
         throw new NotImplementedException();

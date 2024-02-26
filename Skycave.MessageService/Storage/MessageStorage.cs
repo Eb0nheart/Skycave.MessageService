@@ -13,6 +13,8 @@ public interface MessageStorage
     
     Task<IEnumerable<Post>> GetPostsOnWallAsync(string positionString, int page, int pageSize);
 
+    Task<Post?> GetPost(Guid postId);
+
     Task UpdatePostOnWallAsync(Guid id, string message);
 
 }
